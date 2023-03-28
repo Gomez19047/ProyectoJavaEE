@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Tarea Proyecto</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <body>
+        <ui:composition template="./template.xhtml">
+            <ui:define name="top">
+                <p:link outcome="index" value="Inicio" style="margin-bottom:20px;">
+                </p:link>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="list">
+                    <p:panel header="Cliente">
+                        <p:commandButton actionListener="#{clienteBean.cleanCliente()}" 
+                                         oncomplete="PF('dlgSave').show();"
+                                         update=':form'
+                                         value='Agregar' 
+                                         style='margin-bottom: 10px;'> 
+                        </p:commandButton>
+                        <p:dataTable var="item" value="#{clienteBean.findAll()}" 
+                                     id="dataTbl"
+                                     paginator="true"
+                                     rows="8">
+                            <p:column headerText="id">
+                                <h:outputText value="#{item.clienteID}" />
+                            </p:column>
+
+                            <p:column headerText="nombre">
+                                <h:outputText value="#{item.nombreEmpresa}" />
+                            </p:column>
+
+                            <p:column headerText="teléfono">
+                                <h:outputText value="#{item.telefono}" />
+                            </p:column>
+                            <p:column headerText="Opciones">
+                                <p:commandButton value="Editar" 
+                                                 oncomplete="PF('dlgSave').show();"
+                                                 actionListener="#{clienteBean.setCliente(item)}"
+                                                 update=':form'
+                                                 style="margin-right: 20px;"> 
+                                    
+                                </p:commandButton>
+                                <p:commandButton value="Borrar" 
+                                                 oncomplete="PF('dlgDelete').show();"
+                                                 update=':frmDelete'> 
+                                    <f:setPropertyActionListener 
+                                        target="#{clienteBean.cliente}" 
+                                        value="#{item}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form> 
+
+                <h:form id="form">
+                    <p:dialog header="Cliente" 
+                              widgetVar="dlgSave" modal="true" 
+                              showEffect="fade" hideEffect="fade" resizable="false">
+
+                        <p:outputPanel id="save" style="text-align:center;">
+                            <h:inputHidden value="#{clienteBean.cliente.clienteID}" id="id"/>
+                            <p:panelGrid  columns="2"
+                                          columnClasses="label,value"> 
+                                <h:outputText value="Nombre:" />
+                                <p:inputText value="#{clienteBean.cliente.nombreEmpresa}" required="true" />
+                                <h:outputText value="Teléfono:" />
+                                <p:inputText value="#{clienteBean.cliente.telefono}" required="true"/>
+                            </p:panelGrid>
+                            <p:commandButton value="Guardar" 
+                                             actionListener="#{clienteBean.saveCliente()}"
+                                             update=":list:dataTbl"
+                                             oncomplete="PF('dlgSave').hide();">
+                                                 
+                            </p:commandButton>
+                            <p:commandButton value="Cancelar" onclick="PF('dlgSave').hide();">
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </p:dialog>
+                </h:form>
+                <h:form id="frmDelete">
+                     <p:dialog header="Borrar!" 
+                              widgetVar="dlgDelete" modal="true" 
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                         <p:outputPanel id="delete" style="text-align:center;">
+                             Desea eliminar el registro #{clienteBean.cliente.clienteID} ?
+                             <h:inputHidden value="#{clienteBean.cliente.clienteID}" id="id"/>
+                             <h:inputHidden value="#{clienteBean.cliente.nombreEmpresa}" id="nombre"/>
+                             <h:inputHidden value="#{clienteBean.cliente.telefono}" id="telefono"/>
+                            <p:commandButton value="Si" 
+                                             actionListener="#{clienteBean.deleteCliente()}"
+                                             update=":list:dataTbl"
+                                             oncomplete="PF('dlgDelete').hide();"
+                                             style="margin-left: 10px; margin-right: 10px;">
+                                                 
+                            </p:commandButton>
+                            <p:commandButton value="No" onclick="PF('dlgDelete').hide();">
+                            </p:commandButton>
+                         </p:outputPanel>
+                     </p:dialog>
+                </h:form>
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+
